@@ -1,35 +1,38 @@
-const userArgs = process.argv.slice(2);
+const version = require(`./src/version`);
+const error = require(`./src/error`);
+const noParams = require(`./src/no-params`);
+const help = require(`./src/help`);
+const author = require(`./src/author`);
+const license = require(`./src/license`);
+const description = require(`./src/description`);
 
-const helpText = `
-  Доступные команды:
-  --help    — печатает этот текст;
-  --version — печатает версию приложения;
-`;
+const userArgument = process.argv.slice(2)[0];
 
-const noParamsText = `
-  Привет пользователь!
-  Эта программа будет запускать сервер «Кекстаграм».
+const argumentsMap = {
+  "--version": () => version.execute(),
+  "--help": () => help.execute(),
+  "--author": () => author.execute(),
+  "--license": () => license.execute(),
+  "--description": () => description.execute(),
+};
 
-  Автор: Кекс.
-`;
+const onWrongParam = () => {
+  error.execute(userArgument);
+  process.exit(1);
+};
 
-const errorText = (arg) => `
-  Неизвестная команда ${arg}.
-  Чтобы прочитать правила использования приложения, наберите "--help"
-`;
+const checkUserParam = (arg) => {
+  if (arg && argumentsMap[arg]) {
+    argumentsMap[arg]();
+    return;
+  }
 
-switch (userArgs[0]) {
-  case `--version`:
-    console.log(process.version);
-    break;
-  case `--help`:
-    console.log(helpText);
-    break;
-  case void 0:
-    console.log(noParamsText);
-    break;
-  default:
-    console.error(errorText(userArgs[0]));
-    process.exit(1);
-    break;
-}
+  if (arg) {
+    onWrongParam(arg);
+    return;
+  }
+
+  noParams.execute();
+};
+
+checkUserParam(userArgument);
