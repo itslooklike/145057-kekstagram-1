@@ -1,3 +1,4 @@
+require(`colors`);
 const version = require(`./src/version`);
 const error = require(`./src/error`);
 const noParams = require(`./src/no-params`);
