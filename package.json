@@ -1,0 +1,26 @@
+{
+  "name": "145057-kekstagram-nodejs",
+  "version": "1.0.0",
+  "description":
+    "* Студент: [Алексей Масалов](https://up.htmlacademy.ru/nodejs/1/user/145057). * Наставник: [Никита Ткачук](https://htmlacademy.ru/profile/id450211).",
+  "main": "index.js",
+  "scripts": {
+    "test:lint": "eslint .",
+    "test": "npm run test:lint"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/itslooklike/145057-kekstagram-nodejs.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/itslooklike/145057-kekstagram-nodejs/issues"
+  },
+  "homepage": "https://github.com/itslooklike/145057-kekstagram-nodejs#readme",
+  "devDependencies": {
+    "eslint": "4.17.0",
+    "eslint-config-htmlacademy": "0.4.2"
+  }
+}
