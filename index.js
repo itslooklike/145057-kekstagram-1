@@ -13,7 +13,7 @@ const noParamsText = `
   Автор: Кекс.
 `;
 
-const errorText = arg => `
+const errorText = (arg) => `
   Неизвестная команда ${arg}.
   Чтобы прочитать правила использования приложения, наберите "--help"
 `;
