@@ -6,18 +6,16 @@ const author = require(`./src/author`);
 const license = require(`./src/license`);
 const description = require(`./src/description`);
 
-const userArgument = process.argv.slice(2)[0];
-
 const argumentsMap = {
-  "--version": () => version.execute(),
-  "--help": () => help.execute(),
-  "--author": () => author.execute(),
-  "--license": () => license.execute(),
-  "--description": () => description.execute(),
+  [`--${version.name}`]: () => version.execute(),
+  [`--${help.name}`]: () => help.execute(),
+  [`--${author.name}`]: () => author.execute(),
+  [`--${license.name}`]: () => license.execute(),
+  [`--${description.name}`]: () => description.execute(),
 };
 
-const onWrongParam = () => {
-  error.execute(userArgument);
+const onWrongParam = (param) => {
+  error.execute(param);
   process.exit(1);
 };
 
@@ -34,5 +32,7 @@ const checkUserParam = (arg) => {
 
   noParams.execute();
 };
+
+const userArgument = process.argv.slice(2)[0];
 
 checkUserParam(userArgument);
