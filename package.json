@@ -1,8 +1,7 @@
 {
   "name": "145057-kekstagram-nodejs",
   "version": "1.0.0",
-  "description":
-    "* Студент: [Алексей Масалов](https://up.htmlacademy.ru/nodejs/1/user/145057). * Наставник: [Никита Ткачук](https://htmlacademy.ru/profile/id450211).",
+  "description": "* Студент: [Алексей Масалов](https://up.htmlacademy.ru/nodejs/1/user/145057). * Наставник: [Никита Ткачук](https://htmlacademy.ru/profile/id450211).",
   "main": "index.js",
   "scripts": {
     "test:lint": "eslint .",
@@ -21,6 +20,10 @@
   "homepage": "https://github.com/itslooklike/145057-kekstagram-nodejs#readme",
   "devDependencies": {
     "eslint": "4.17.0",
-    "eslint-config-htmlacademy": "0.4.2"
+    "eslint-config-htmlacademy": "0.4.2",
+    "prettier": "1.10.2"
+  },
+  "dependencies": {
+    "colors": "1.1.2"
   }
 }
