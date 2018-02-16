@@ -6,13 +6,9 @@ const author = require(`./src/author`);
 const license = require(`./src/license`);
 const description = require(`./src/description`);
 
-const argumentsMap = {
-  [`--${version.name}`]: () => version.execute(),
-  [`--${help.name}`]: () => help.execute(),
-  [`--${author.name}`]: () => author.execute(),
-  [`--${license.name}`]: () => license.execute(),
-  [`--${description.name}`]: () => description.execute(),
-};
+const commands = [version, help, author, license, description];
+
+const isCommandExist = (arg) => commands.find((item) => item.name === arg);
 
 const onWrongParam = (param) => {
   error.execute(param);
@@ -20,19 +16,21 @@ const onWrongParam = (param) => {
 };
 
 const checkUserParam = (arg) => {
-  if (arg && argumentsMap[arg]) {
-    argumentsMap[arg]();
-    return;
-  }
-
   if (arg) {
-    onWrongParam(arg);
-    return;
+    const command = isCommandExist(arg.replace(`--`, ``));
+
+    if (command) {
+      command.execute();
+      return;
+    } else {
+      onWrongParam(arg);
+      return;
+    }
   }
 
   noParams.execute();
 };
 
-const userArgument = process.argv.slice(2)[0];
+const [, , userArgument] = process.argv;
 
 checkUserParam(userArgument);
