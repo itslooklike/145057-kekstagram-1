@@ -20,15 +20,15 @@ const getMaxWordLength = (list) => {
 
 const generateManual = (list) => {
   const maxWordLength = getMaxWordLength(list);
-  let manualList = ``;
 
-  Object.keys(list).forEach((item) => {
-    const pad = maxWordLength - item.length;
+  const result = Object.keys(list)
+      .map((item) => {
+        const pad = maxWordLength - item.length;
+        return `${item.gray}${` `.repeat(pad)} - ${list[item].green}`;
+      })
+      .join(`\n`);
 
-    manualList += `${item.gray}${` `.repeat(pad)} - ${list[item].green}\n`;
-  });
-
-  return manualList;
+  return result;
 };
 
 const helpText = `
