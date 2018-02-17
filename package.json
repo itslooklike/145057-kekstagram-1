@@ -1,11 +1,16 @@
 {
   "name": "145057-kekstagram-nodejs",
   "version": "1.0.0",
-  "description": "* Студент: [Алексей Масалов](https://up.htmlacademy.ru/nodejs/1/user/145057). * Наставник: [Никита Ткачук](https://htmlacademy.ru/profile/id450211).",
+  "description":
+    "* Студент: [Алексей Масалов](https://up.htmlacademy.ru/nodejs/1/user/145057). * Наставник: [Никита Ткачук](https://htmlacademy.ru/profile/id450211).",
   "main": "index.js",
   "scripts": {
     "test:lint": "eslint .",
+    "precommit": "lint-staged",
     "test": "npm run test:lint"
+  },
+  "lint-staged": {
+    "*.{js,json,css,md}": ["prettier --config ./.prettierrc --write", "git add"]
   },
   "repository": {
     "type": "git",
@@ -21,6 +26,8 @@
   "devDependencies": {
     "eslint": "4.17.0",
     "eslint-config-htmlacademy": "0.4.2",
+    "husky": "0.14.3",
+    "lint-staged": "6.1.1",
     "prettier": "1.10.2"
   },
   "dependencies": {
