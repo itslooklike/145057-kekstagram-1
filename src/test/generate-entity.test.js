@@ -30,26 +30,26 @@ describe(`Проверка тестовых данных`, () => {
   });
 
   it(`"comments": массив строк, каждая строка не должна превышать 140 символов`, () => {
-    const res = data.comments.find(text => text.length > 140);
+    const res = data.comments.find((text) => text.length > 140);
     assert.ok(!res);
   });
 });
 
 describe(`"hashtags" Проверка хештегов`, () => {
-  const { hashtags } = data;
+  const {hashtags} = data;
 
   it(`массив строк — не более 5 элементов`, () => {
-    const checkTagsLength = tags => tags.length <= 5;
+    const checkTagsLength = (tags) => tags.length <= 5;
     assert.ok(checkTagsLength(hashtags));
   });
 
   it(`каждая строка начинается с символа '#'`, () => {
-    const hashtagIsMissed = tags => tags.find(item => item[0] !== `#`);
+    const hashtagIsMissed = (tags) => tags.find((item) => item[0] !== `#`);
     assert.ok(!hashtagIsMissed(hashtags));
   });
 
   it(`должно содержать одно слово без пробелов`, () => {
-    const containSpaces = tags => tags.find(item => item.indexOf(` `) !== -1);
+    const containSpaces = (tags) => tags.find((item) => item.indexOf(` `) !== -1);
 
     assert.ok(!containSpaces(hashtags));
   });
@@ -57,8 +57,8 @@ describe(`"hashtags" Проверка хештегов`, () => {
   it(`слова не должны повторяться (регистр не учитывается)`, () => {
     const tmpArr = [];
 
-    const dublicateFinded = tags =>
-      tags.find(item => {
+    const dublicateFinded = (tags) =>
+      tags.find((item) => {
         const lowed = item.toLowerCase();
         const isDublicateFound = tmpArr.indexOf(lowed) !== -1;
 
@@ -73,7 +73,7 @@ describe(`"hashtags" Проверка хештегов`, () => {
   });
 
   it(`длина одного слова не превышает 20 символов`, () => {
-    const checkStringLength = tags => tags.find(item => item.length <= 20);
+    const checkStringLength = (tags) => tags.find((item) => item.length <= 20);
     assert.ok(checkStringLength(hashtags));
   });
 });

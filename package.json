@@ -13,7 +13,12 @@
     "prepush": "npm test"
   },
   "lint-staged": {
-    "*.{js,json,css,md}": ["prettier --config ./.prettierrc --write", "git add"]
+    "*.{json,css,md}": ["prettier --config ./.prettierrc --write", "git add"],
+    "*.{js}": [
+      "prettier --config ./.prettierrc --write",
+      "eslint '!node_modules/*' --fix",
+      "git add"
+    ]
   },
   "repository": {
     "type": "git",

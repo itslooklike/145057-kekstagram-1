@@ -9,14 +9,14 @@ const description = require(`./src/description`);
 
 const commands = [version, help, author, license, description];
 
-const isCommandExist = arg => commands.find(item => item.name === arg);
+const isCommandExist = (arg) => commands.find((item) => item.name === arg);
 
-const onWrongParam = param => {
+const onWrongParam = (param) => {
   error.execute(param);
   process.exit(1);
 };
 
-const checkUserParam = arg => {
+const checkUserParam = (arg) => {
   if (arg) {
     const command = isCommandExist(arg.replace(`--`, ``));
 
