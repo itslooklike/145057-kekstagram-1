@@ -1,4 +1,6 @@
 const getRandomElement = require(`./utils/getRandomElement`);
+const getRandomValue = require(`./utils/getRandomValue`);
+const getUniqFromArray = require(`./utils/getUniqFromArray`);
 
 const urls = [
   `https://picsum.photos/600/?random`,
@@ -13,14 +15,24 @@ const urls = [
   `https://picsum.photos/600/?random`,
 ];
 
-const scales = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
-
 const effects = [`none`, `chrome`, `sepia`, `marvin`, `phobos`, `heat`];
 
 const hashtags = [
-  [`#лайк`, `#шер`, `#репост`, `#блокчейн`, `#такси`],
-  [`#реакт`, `#убер`, `#хайп`, `#смузи`, `#вейп`],
-  [`#жижа`, `#барбер`, `#биткоин`, `#крипта`, `#стартап`],
+  `#лайк`,
+  `#шер`,
+  `#репост`,
+  `#блокчейн`,
+  `#такси`,
+  `#реакт`,
+  `#убер`,
+  `#хайп`,
+  `#смузи`,
+  `#вейп`,
+  `#стартап`,
+  `#крипта`,
+  `#биткоин`,
+  `#барбер`,
+  `#жижа`,
 ];
 
 const descriptions = [
@@ -38,8 +50,6 @@ const descriptions = [
   `Россия попалась на допинге на Олимпиаде-2018 в Пхенчхане (Обозреватель)`,
   `«Это смешно»: в Федерации керлинга усомнились в применении Крушельницким мельдония`,
 ];
-
-const likes = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
 const comments = [
   [
@@ -64,14 +74,29 @@ const comments = [
 
 const generate = () => ({
   url: getRandomElement(urls),
-  scale: getRandomElement(scales),
+  scale: getRandomValue(1, 10),
   effect: getRandomElement(effects),
-  hashtags: getRandomElement(hashtags),
+  hashtags: getUniqFromArray(hashtags, getRandomValue(0, 5)),
   description: getRandomElement(descriptions),
-  likes: getRandomElement(likes),
+  likes: getRandomValue(0, 1000),
   comments: getRandomElement(comments),
 });
 
 const generateEntity = () => generate();
 
 module.exports = generateEntity;
+
+// Пример сгенерированных данных
+// const generateEntityExample = {
+//   url: `https://picsum.photos/600/?random`,
+//   scale: 2,
+//   effect: `chrome`,
+//   hashtags: [`#лакшери`, `#потрясно`, `#лав`],
+//   description: `фотка просто космос!!`,
+//   likes: 342,
+//   comments: [
+//     `хорошо отдохнули?`,
+//     `а еще фотки будут?`,
+//     `выглядишь потрясно!!!`,
+//   ],
+// };

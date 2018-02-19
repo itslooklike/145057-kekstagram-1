@@ -49,31 +49,28 @@ describe(`"hashtags" Проверка хештегов`, () => {
   });
 
   it(`должно содержать одно слово без пробелов`, () => {
-    const containSpaces = (tags) => tags.find((item) => item.indexOf(` `) !== -1);
+    const containSpaces = (tags) =>
+      tags.find((item) => item.indexOf(` `) !== -1);
 
     assert.ok(!containSpaces(hashtags));
   });
 
   it(`слова не должны повторяться (регистр не учитывается)`, () => {
-    const tmpArr = [];
+    const result = hashtags.reduce((dublicates, value) => {
+      const lowerValue = value.toLowerCase();
 
-    const dublicateFinded = (tags) =>
-      tags.find((item) => {
-        const lowed = item.toLowerCase();
-        const isDublicateFound = tmpArr.indexOf(lowed) !== -1;
+      if (dublicates.indexOf(lowerValue) > -1) {
+        dublicates.push(lowerValue);
+      }
 
-        if (!isDublicateFound) {
-          tmpArr.push(lowed);
-        }
+      return dublicates;
+    }, []);
 
-        return isDublicateFound;
-      });
-
-    assert.ok(!dublicateFinded(hashtags));
+    assert.ok(!(result.length > 0));
   });
 
   it(`длина одного слова не превышает 20 символов`, () => {
-    const checkStringLength = (tags) => tags.find((item) => item.length <= 20);
-    assert.ok(checkStringLength(hashtags));
+    const findLongString = (tags) => tags.find((item) => item.length > 20);
+    assert.ok(!findLongString(hashtags));
   });
 });
