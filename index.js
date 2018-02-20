@@ -22,11 +22,11 @@ const checkUserParam = (arg) => {
 
     if (command) {
       command.execute();
-      return;
     } else {
       onWrongParam(arg);
-      return;
     }
+
+    return;
   }
 
   noParams.execute();
