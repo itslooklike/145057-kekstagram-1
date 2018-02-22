@@ -2,6 +2,11 @@ const http = require(`http`);
 const url = require(`url`);
 const path = require(`path`);
 const fs = require(`fs`);
+const {promisify} = require(`util`);
+
+const stat = promisify(fs.stat);
+const readdir = promisify(fs.readdir);
+const readfile = promisify(fs.readFile);
 
 const HOSTNAME = `127.0.0.1`;
 const DEFAULT_PORT = 3000;
@@ -15,11 +20,7 @@ const MIME_MAP = {
 };
 
 const printDirectory = (localPath, files) => {
-  console.log(`localPath`, localPath);
-  const filePath = localPath.replace(
-      path.normalize(__dirname + STATIC_PATH),
-      ``
-  );
+  const link = localPath.replace(path.normalize(__dirname + STATIC_PATH), ``);
 
   return `
     <!DOCTYPE html>
@@ -30,15 +31,15 @@ const printDirectory = (localPath, files) => {
       </head>
       <body>
         <ul>${files
-      .map((it) => `<li><a href="${filePath + `/` + it}">${it}</a></li>`)
+      .map((it) => `<li><a href="${link + `/` + it}">${it}</a></li>`)
       .join(``)}</ul>
       </body>
     </html>
   `;
 };
 
-const readFile = (localPath, res) => {
-  const data = fs.readFileSync(localPath);
+const readFile = async (localPath, res) => {
+  const data = await readfile(localPath);
   const fileExt = path.extname(localPath).replace(`.`, ``);
   const contentType = MIME_MAP[fileExt];
 
@@ -47,8 +48,8 @@ const readFile = (localPath, res) => {
   res.end(data);
 };
 
-const readDir = (localPath, res) => {
-  const files = fs.readdirSync(localPath);
+const readDir = async (localPath, res) => {
+  const files = await readdir(localPath);
   const content = printDirectory(localPath, files);
 
   res.setHeader(`content-type`, `text/html; charset=UTF-8`);
@@ -58,21 +59,35 @@ const readDir = (localPath, res) => {
 
 const startServer = (port = DEFAULT_PORT) => {
   const server = http.createServer((req, res) => {
-    const staticRoot = path.normalize(__dirname + STATIC_PATH);
+    (async () => {
+      try {
+        const staticRoot = path.normalize(__dirname + STATIC_PATH);
 
-    // обрезаю слеш на конце урла
-    const urlWithoutSlash = url.parse(req.url).pathname.replace(/\/$/, ``);
+        // обрезаю слеш на конце урла
+        const urlWithoutSlash = url.parse(req.url).pathname.replace(/\/$/, ``);
 
-    const resPath = staticRoot + urlWithoutSlash;
+        const resPath = staticRoot + urlWithoutSlash;
+        const dataStat = await stat(resPath);
+        const isFolder = dataStat.isDirectory();
 
-    // if (resPath === `раскоментить, чтобы потестить навигацию по папкам`) {
-    if (resPath === staticRoot) {
-      readFile(resPath + `/index.html`, res);
-    } else if (fs.statSync(resPath).isDirectory()) {
-      readDir(resPath, res);
-    } else {
-      readFile(resPath, res);
-    }
+        // if (resPath === `раскоментить, чтобы потестить навигацию по папкам`) {
+        if (resPath === staticRoot) {
+          await readFile(resPath + `/index.html`, res);
+        } else if (isFolder) {
+          await readDir(resPath, res);
+        } else {
+          await readFile(resPath, res);
+        }
+      } catch (e) {
+        res.writeHead(404, `Not Found`);
+        res.end();
+      }
+    })().catch((e) => {
+      res.writeHead(500, e.message, {
+        "content-type": `text/plain`,
+      });
+      res.end(e.message);
+    });
   });
 
   const serverAddress = `http://${HOSTNAME}:${port}`;
