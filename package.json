@@ -8,17 +8,7 @@
     "test:eslint": "eslint .",
     "test:mocha": "mocha ./**/*.test.js",
     "test:mocha:watch": "mocha ./**/*.test.js --watch",
-    "test": "npm run test:eslint && npm run test:mocha",
-    "precommit": "lint-staged",
-    "prepush": "npm test"
-  },
-  "lint-staged": {
-    "*.{json,css,md}": ["prettier --config ./.prettierrc --write", "git add"],
-    "*.{js}": [
-      "prettier --config ./.prettierrc --write",
-      "eslint '!node_modules/*' --fix",
-      "git add"
-    ]
+    "test": "npm run test:eslint && npm run test:mocha"
   },
   "repository": {
     "type": "git",
