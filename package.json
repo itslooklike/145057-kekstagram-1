@@ -9,7 +9,7 @@
     "test:mocha": "mocha ./**/*.test.js",
     "test:mocha:watch": "mocha ./**/*.test.js --watch",
     "test": "npm run test:eslint && npm run test:mocha",
-    "start": "nodemon server.js"
+    "start": "nodemon index.js --server 2999"
   },
   "repository": {
     "type": "git",

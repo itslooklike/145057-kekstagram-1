@@ -3,7 +3,7 @@ const url = require(`url`);
 const fs = require(`fs`);
 
 const HOSTNAME = `127.0.0.1`;
-const PORT = 3000;
+const DEFAULT_PORT = 3000;
 
 const printDirectory = (files) => `
   <!DOCTYPE html>
@@ -28,28 +28,32 @@ const readFile = (path, res) => {
   res.end(data);
 };
 
-const readDir = async (path, res) => {
+const readDir = (path, res) => {
   const files = fs.readdirSync(path);
   const content = printDirectory(files);
 
-  res.setHeader(`content-type`, `text/html`);
+  res.setHeader(`content-type`, `text/html; charset=UTF-8`);
   res.setHeader(`content-length`, Buffer.byteLength(content));
   res.end(content);
 };
 
-const server = http.createServer((req, res) => {
-  const staticPath = __dirname + `/static`;
-  const resPath = staticPath + url.parse(req.url).pathname;
+const startServer = (port = DEFAULT_PORT) => {
+  const server = http.createServer((req, res) => {
+    const staticPath = __dirname + `/../static`;
+    const resPath = staticPath + url.parse(req.url).pathname;
 
-  if (fs.statSync(resPath).isDirectory()) {
-    readDir(resPath, res);
-  } else {
-    readFile(resPath, res);
-  }
-});
+    if (fs.statSync(resPath).isDirectory()) {
+      readDir(resPath, res);
+    } else {
+      readFile(resPath, res);
+    }
+  });
 
-const serverAddress = `http://${HOSTNAME}:${PORT}`;
+  const serverAddress = `http://${HOSTNAME}:${port}`;
 
-server.listen(PORT, HOSTNAME, () => {
-  console.log(`Server running at ${serverAddress}/`);
-});
+  server.listen(port, HOSTNAME, () => {
+    console.log(`Server running at ${serverAddress}/`);
+  });
+};
+
+module.exports = startServer;
