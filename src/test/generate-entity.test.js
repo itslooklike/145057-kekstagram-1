@@ -1,5 +1,5 @@
 const assert = require(`assert`);
-const generateEntity = require(`../generate-entity`);
+const generateEntity = require(`../data/generate-entity`);
 
 const data = generateEntity();
 const minmax = (value, min, max) => {

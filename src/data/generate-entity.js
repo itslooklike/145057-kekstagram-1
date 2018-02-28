@@ -1,6 +1,6 @@
-const getRandomElement = require(`./utils/getRandomElement`);
-const getRandomValue = require(`./utils/getRandomValue`);
-const getUniqFromArray = require(`./utils/getUniqFromArray`);
+const getRandomElement = require(`../utils/getRandomElement`);
+const getRandomValue = require(`../utils/getRandomValue`);
+const getUniqFromArray = require(`../utils/getUniqFromArray`);
 
 const urls = [
   `https://picsum.photos/600/?random`,
