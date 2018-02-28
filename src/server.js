@@ -26,7 +26,7 @@ const printDirectory = (absPath, files) => {
       path.normalize(__dirname + STATIC_PATH) + `/`,
       ``
   );
-  console.log(`link`, link);
+
   return `
     <!DOCTYPE html>
     <html lang="en">
@@ -62,32 +62,33 @@ const readDir = async (absPath, res) => {
   res.end(content);
 };
 
-const startServer = (port = DEFAULT_PORT) => {
-  const server = http.createServer(async (req, res) => {
-    try {
-      const requestPathname = url.parse(req.url).pathname;
-      const reqAbsPath = getStaticPath(requestPathname);
-      const dataStat = await stat(reqAbsPath);
+module.exports = {
+  name: `server`,
+  description: `Запускает сервер`,
+  execute(port = DEFAULT_PORT) {
+    const server = http.createServer(async (req, res) => {
+      try {
+        const requestPathname = url.parse(req.url).pathname;
+        const reqAbsPath = getStaticPath(requestPathname);
+        const dataStat = await stat(reqAbsPath);
 
-      // if (requestPathname === `forFoldersTest`) {
-      if (requestPathname === `/`) {
-        await readFile(reqAbsPath + `index.html`, res);
-      } else if (dataStat.isDirectory()) {
-        await readDir(reqAbsPath, res);
-      } else {
-        await readFile(reqAbsPath, res);
+        if (requestPathname === `/`) {
+          await readFile(reqAbsPath + `index.html`, res);
+        } else if (dataStat.isDirectory()) {
+          await readDir(reqAbsPath, res);
+        } else {
+          await readFile(reqAbsPath, res);
+        }
+      } catch (e) {
+        res.writeHead(404, `Not Found`);
+        res.end();
       }
-    } catch (e) {
-      res.writeHead(404, `Not Found`);
-      res.end();
-    }
-  });
+    });
 
-  const serverAddress = `http://${HOSTNAME}:${port}`;
+    const serverAddress = `http://${HOSTNAME}:${port}`;
 
-  server.listen(port, HOSTNAME, () => {
-    console.log(`Server running at ${serverAddress}/`);
-  });
+    server.listen(port, HOSTNAME, () => {
+      console.log(`Server running at ${serverAddress}/`);
+    });
+  },
 };
-
-module.exports = startServer;
