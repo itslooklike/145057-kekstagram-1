@@ -1,12 +1,14 @@
 {
   "name": "145057-kekstagram-nodejs",
   "version": "1.0.0",
-  "description": "* Студент: [Алексей Масалов](https://up.htmlacademy.ru/nodejs/1/user/145057). * Наставник: [Никита Ткачук](https://htmlacademy.ru/profile/id450211).",
+  "description":
+    "* Студент: [Алексей Масалов](https://up.htmlacademy.ru/nodejs/1/user/145057). * Наставник: [Никита Ткачук](https://htmlacademy.ru/profile/id450211).",
   "main": "index.js",
   "scripts": {
     "test:eslint": "eslint .",
     "test:mocha": "mocha ./src/**/*.test.js",
-    "test:mocha:watch": "mocha ./**/*.test.js --watch",
+    "test:mocha:watch": "mocha ./src/**/*.test.js --watch",
+    "test:mocha:api": "mocha ./src/**/**.api.test.js",
     "test": "npm run test:eslint && npm run test:mocha",
     "start": "nodemon index.js --server 2999"
   },
@@ -32,7 +34,9 @@
     "supertest": "3.0.0"
   },
   "dependencies": {
+    "body-parser": "1.18.2",
     "colors": "1.1.2",
-    "express": "4.16.2"
+    "express": "4.16.2",
+    "multer": "1.3.0"
   }
 }
