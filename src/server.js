@@ -4,8 +4,6 @@ const path = require(`path`);
 const fs = require(`fs`);
 const {promisify} = require(`util`);
 
-const stat = promisify(fs.stat);
-const readdir = promisify(fs.readdir);
 const readfile = promisify(fs.readFile);
 
 const HOSTNAME = `127.0.0.1`;
@@ -21,28 +19,6 @@ const MIME_MAP = {
 
 const getStaticPath = (fileName) => path.join(__dirname, STATIC_PATH, fileName);
 
-const printDirectory = (absPath, files) => {
-  const link = absPath.replace(
-      path.normalize(__dirname + STATIC_PATH) + `/`,
-      ``
-  );
-  console.log(`link`, link);
-  return `
-    <!DOCTYPE html>
-    <html lang="en">
-      <head>
-        <meta charset="UTF-8">
-        <title>Directory content</title>
-      </head>
-      <body>
-        <ul>${files
-      .map((it) => `<li><a href="${link + `/` + it}">${it}</a></li>`)
-      .join(``)}</ul>
-      </body>
-    </html>
-  `;
-};
-
 const readFile = async (fileName, res) => {
   const data = await readfile(fileName);
   const fileExt = path.extname(fileName).replace(`.`, ``);
@@ -53,41 +29,30 @@ const readFile = async (fileName, res) => {
   res.end(data);
 };
 
-const readDir = async (absPath, res) => {
-  const files = await readdir(absPath);
-  const content = printDirectory(absPath, files);
+module.exports = {
+  name: `server`,
+  description: `Запускает сервер`,
+  execute(port = DEFAULT_PORT) {
+    const server = http.createServer(async (req, res) => {
+      try {
+        const requestPathname = url.parse(req.url).pathname;
+        const reqAbsPath = getStaticPath(requestPathname);
 
-  res.setHeader(`content-type`, `text/html; charset=UTF-8`);
-  res.setHeader(`content-length`, Buffer.byteLength(content));
-  res.end(content);
-};
-
-const startServer = (port = DEFAULT_PORT) => {
-  const server = http.createServer(async (req, res) => {
-    try {
-      const requestPathname = url.parse(req.url).pathname;
-      const reqAbsPath = getStaticPath(requestPathname);
-      const dataStat = await stat(reqAbsPath);
-
-      // if (requestPathname === `forFoldersTest`) {
-      if (requestPathname === `/`) {
-        await readFile(reqAbsPath + `index.html`, res);
-      } else if (dataStat.isDirectory()) {
-        await readDir(reqAbsPath, res);
-      } else {
-        await readFile(reqAbsPath, res);
+        if (requestPathname === `/`) {
+          await readFile(reqAbsPath + `index.html`, res);
+        } else {
+          await readFile(reqAbsPath, res);
+        }
+      } catch (e) {
+        res.writeHead(404, `Not Found`);
+        res.end();
       }
-    } catch (e) {
-      res.writeHead(404, `Not Found`);
-      res.end();
-    }
-  });
+    });
 
-  const serverAddress = `http://${HOSTNAME}:${port}`;
+    const serverAddress = `http://${HOSTNAME}:${port}`;
 
-  server.listen(port, HOSTNAME, () => {
-    console.log(`Server running at ${serverAddress}/`);
-  });
+    server.listen(port, HOSTNAME, () => {
+      console.log(`Server running at ${serverAddress}/`);
+    });
+  },
 };
-
-module.exports = startServer;

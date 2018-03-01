@@ -6,9 +6,9 @@ const help = require(`./src/help`);
 const author = require(`./src/author`);
 const license = require(`./src/license`);
 const description = require(`./src/description`);
-const serverStart = require(`./src/server-start`);
+const server = require(`./src/server`);
 
-const commands = [version, help, author, license, description, serverStart];
+const commands = [version, help, author, license, description, server];
 
 const isCommandExist = (arg) => commands.find((item) => item.name === arg);
 
