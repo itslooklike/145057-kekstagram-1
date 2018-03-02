@@ -6,7 +6,7 @@ const help = require(`./cli/help`);
 const author = require(`./cli/author`);
 const license = require(`./cli/license`);
 const description = require(`./cli/description`);
-const server = require(`./server`);
+const server = require(`./server/server`);
 
 const commands = [version, help, author, license, description, server];
 

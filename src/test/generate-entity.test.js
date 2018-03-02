@@ -21,7 +21,7 @@ describe(`Проверка тестовых данных`, () => {
     assert.ok(effectsName.indexOf(data.effect) !== -1);
   });
 
-  it(`"description": строка — не более 140 символов, содержит произвольный текст`, () => {
+  it(`"description": строка — не более 140 символов`, () => {
     assert.ok(data.description.length <= 140);
   });
 
