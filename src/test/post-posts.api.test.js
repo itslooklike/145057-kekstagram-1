@@ -1,24 +1,11 @@
 const supertest = require(`supertest`);
 const {app} = require(`../server`);
-
+const generateEntity = require(`../data/generate-entity`);
 const apiUrl = `/api/posts`;
 
 describe(`POST ${apiUrl}`, function () {
   it(`должен совпадать JSON`, () => {
-    const mockData = {
-      url: `https://picsum.photos/600/?random`,
-      scale: 5,
-      effect: `chrome`,
-      hashtags: [`#биткоин`],
-      description: `Губерниев в шоке от новости про мельдоний Крушельницкого`,
-      likes: 432,
-      comments: [
-        `Губерниев в шоке от новости про мельдоний Крушельницкого`,
-        `Ученые предположили человеческую реакцию на встречу с пришельцами`,
-        `Американские ученые объяснили, почему земляне обрадуются встрече с инопланетянами`,
-      ],
-      date: 1234,
-    };
+    const mockData = generateEntity();
 
     return supertest(app)
         .post(apiUrl)
