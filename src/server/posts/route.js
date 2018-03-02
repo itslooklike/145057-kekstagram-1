@@ -2,7 +2,9 @@ const {Router} = require(`express`);
 const bodyParser = require(`body-parser`);
 const multer = require(`multer`);
 const generateEntity = require(`../../data/generate-entity`);
-const validate = require(`./validate`);
+const asyncWrap = require(`../../utils/asyncWrap`);
+const ValidationError = require(`./validate/validation-error`);
+const validator = require(`./validate/validator`);
 
 const upload = multer({storage: multer.memoryStorage()});
 const postsRouter = new Router();
@@ -23,30 +25,48 @@ const responsePosts = ({limit = 50, skip = 0} = {}) => {
 };
 
 postsRouter.use(bodyParser.json());
-postsRouter.get(``, (req, res) => res.send(responsePosts()));
+postsRouter.get(``, asyncWrap(async (req, res) => res.send(responsePosts())));
 
-postsRouter.get(`/:date`, (req, res) => {
-  const post = responsePosts().data.find(
-      (item) => item.date.toString() === req.params.date
-  );
+postsRouter.get(
+    `/:date`,
+    asyncWrap(async (req, res) => {
+      const post = responsePosts().data.find(
+          (item) => item.date.toString() === req.params.date
+      );
 
-  if (post) {
-    res.send(post);
-  } else {
-    res.status(404).send();
+      if (post) {
+        res.send(post);
+      } else {
+        res.status(404).send();
+      }
+    })
+);
+
+postsRouter.post(
+    ``,
+    upload.single(`filename`),
+    asyncWrap(async (req, res) => {
+      const data = Object.assign({}, req.body, {filename: req.file});
+
+      const errors = validator(data);
+
+      if (errors.length > 0) {
+        throw new ValidationError(errors);
+      } else {
+        res.send(req.body);
+      }
+    })
+);
+
+postsRouter.use((exception, req, res, next) => {
+  let error = exception;
+
+  if (exception instanceof ValidationError) {
+    error = exception.errors;
   }
-});
 
-postsRouter.post(``, upload.single(`image`), (req, res) => {
-  const data = Object.assign({}, req.body, {image: req.file});
-
-  const errors = validate(data);
-
-  if (errors.length > 0) {
-    res.status(400).send(JSON.stringify(errors));
-  } else {
-    res.send(req.body);
-  }
+  res.status(400).send(error);
+  next();
 });
 
 module.exports = postsRouter;

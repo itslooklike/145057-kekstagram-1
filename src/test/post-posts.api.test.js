@@ -32,7 +32,7 @@ describe(`POST ${apiUrl}`, function () {
     return supertest(app)
         .post(apiUrl)
         .attach(
-            `image`,
+            `filename`,
             path.join(
                 __dirname,
                 `../server/posts/36268899-ce42264e-1288-11e8-82d7-2d8265398b9e.png`

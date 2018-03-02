@@ -1,30 +1,10 @@
-const effectsName = [`none`, `chrome`, `sepia`, `marvin`, `phobos`, `heat`];
-
-const minmax = (value, min, max) => {
-  const num = parseInt(value, 10);
-  return num >= min && num <= max;
-};
-
-const arrMaxSize = (item, val) => item.length <= val;
-const isArrOfStringsContainSymbol = (val, symbol) =>
-  val.find((item) => item.indexOf(symbol) !== -1);
-const isArrOfStringsContainFirstSymbol = (tags, symbol) =>
-  tags.find((item) => item[0] === symbol);
-const isStringInArrTooLong = (tags, long) =>
-  tags.find((item) => item.length > long);
-const isArrContainStringsDublicates = (val) => {
-  const result = val.reduce((dublicates, value) => {
-    const lowerValue = value.toLowerCase();
-
-    if (dublicates.indexOf(lowerValue) > -1) {
-      dublicates.push(lowerValue);
-    }
-
-    return dublicates;
-  }, []);
-
-  return result.length > 0;
-};
+const {isArrayUnique, numberInRange} = require(`../../../utils/assertions`);
+const {
+  effectsName,
+  isArrOfStringsContainSymbol,
+  isArrOfStringsContainFirstSymbol,
+  isStringInArrTooLong,
+} = require(`./assertions`);
 
 const errorType = (name, value, message) => ({
   fieldName: name,
@@ -33,13 +13,15 @@ const errorType = (name, value, message) => ({
 });
 
 const schema = {
-  image: {
+  filename: {
     required: true,
     validate(val) {
       const errors = [];
 
       if (!val.mimetype.startsWith(`image/`)) {
-        errors.push(errorType(`image`, val.mimetype, `должно быть картинкой`));
+        errors.push(
+            errorType(`filename`, val.mimetype, `должно быть картинкой`)
+        );
       }
 
       return errors;
@@ -50,7 +32,7 @@ const schema = {
     validate(val) {
       const errors = [];
 
-      if (!minmax(val, 0, 100)) {
+      if (!numberInRange(val, 0, 100)) {
         errors.push(errorType(`scale`, val, `число, в пределах от 0 до 100`));
       }
 
@@ -80,7 +62,7 @@ const schema = {
     validate(val) {
       const errors = [];
 
-      if (!arrMaxSize(val, 5)) {
+      if (val.length > 5) {
         errors.push(errorType(`hashtags`, val, `не более 5 элементов`));
       }
 
@@ -96,7 +78,7 @@ const schema = {
         );
       }
 
-      if (isArrContainStringsDublicates(val)) {
+      if (!isArrayUnique(val)) {
         errors.push(errorType(`hashtags`, val, `слова не должны повторяться`));
       }
 
