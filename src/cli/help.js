@@ -4,6 +4,7 @@ const manualMap = {
   "--description": `показывает описание проекта`,
   "--author": `показывает автора`,
   "--license": `показывает лицензию проекта`,
+  "--server": `запустить сервер`,
 };
 
 const getMaxWordLength = (list) => {

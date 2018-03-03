@@ -1,6 +1,6 @@
-const getRandomElement = require(`./utils/getRandomElement`);
-const getRandomValue = require(`./utils/getRandomValue`);
-const getUniqFromArray = require(`./utils/getUniqFromArray`);
+const getRandomElement = require(`../utils/getRandomElement`);
+const getRandomValue = require(`../utils/getRandomValue`);
+const getUniqFromArray = require(`../utils/getUniqFromArray`);
 
 const urls = [
   `https://picsum.photos/600/?random`,
@@ -76,23 +76,9 @@ const generate = () => ({
   description: getRandomElement(descriptions),
   likes: getRandomValue(0, 1000),
   comments: getUniqFromArray(comments, getRandomValue(0, comments.length - 1)),
+  date: Date.now(),
 });
 
 const generateEntity = () => generate();
 
 module.exports = generateEntity;
-
-// Пример сгенерированных данных
-// const generateEntityExample = {
-//   url: `https://picsum.photos/600/?random`,
-//   scale: 2,
-//   effect: `chrome`,
-//   hashtags: [`#лакшери`, `#потрясно`, `#лав`],
-//   description: `фотка просто космос!!`,
-//   likes: 342,
-//   comments: [
-//     `хорошо отдохнули?`,
-//     `а еще фотки будут?`,
-//     `выглядишь потрясно!!!`,
-//   ],
-// };

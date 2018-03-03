@@ -1,8 +1,8 @@
 const readline = require(`readline`);
 const fs = require(`fs`);
 const path = require(`path`);
-const writeFileSyncWithDirs = require(`./utils/writeFileSyncWithDirs`);
-const generateEntity = require(`./generate-entity`);
+const writeFileSyncWithDirs = require(`../utils/writeFileSyncWithDirs`);
+const generateEntity = require(`../data/generate-entity`);
 
 const helloText = `
   Привет пользователь!

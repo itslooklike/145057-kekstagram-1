@@ -1,4 +1,4 @@
-const packageJson = require(`../package.json`);
+const packageJson = require(`../../package.json`);
 
 const getColoredVersion = (version) => {
   const colors = [`red`, `green`, `blue`];

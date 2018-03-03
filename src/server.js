@@ -1,58 +1,59 @@
-const http = require(`http`);
-const url = require(`url`);
-const path = require(`path`);
-const fs = require(`fs`);
-const {promisify} = require(`util`);
+const express = require(`express`);
+const bodyParser = require(`body-parser`);
+const multer = require(`multer`);
+const generateEntity = require(`./data/generate-entity`);
 
-const readfile = promisify(fs.readFile);
-
+const upload = multer({storage: multer.memoryStorage()});
+const app = express();
 const HOSTNAME = `127.0.0.1`;
 const DEFAULT_PORT = 3000;
-const STATIC_PATH = `/../static`;
-const MIME_MAP = {
-  css: `text/css`,
-  html: `text/html; charset=UTF-8`,
-  jpg: `image/jpeg`,
-  png: `image/png`,
-  ico: `image/x-icon`,
+
+app.disable(`x-powered-by`);
+app.use(express.static(`static`));
+app.use(bodyParser.json());
+
+const responsePosts = ({limit = 50, skip = 0} = {}) => {
+  const data = [];
+
+  Array.from({length: limit}).forEach(() => data.push(generateEntity()));
+
+  const response = {
+    data,
+    skip,
+    limit,
+    total: data.length,
+  };
+
+  return response;
 };
 
-const getStaticPath = (fileName) => path.join(__dirname, STATIC_PATH, fileName);
+app.get(`/api/posts`, (req, res) => res.send(responsePosts()));
 
-const readFile = async (fileName, res) => {
-  const data = await readfile(fileName);
-  const fileExt = path.extname(fileName).replace(`.`, ``);
-  const contentType = MIME_MAP[fileExt];
+app.get(`/api/posts/:date`, (req, res) => {
+  const post = responsePosts().data.find(
+      (item) => item.date.toString() === req.params.date
+  );
 
-  res.setHeader(`content-type`, contentType);
-  res.setHeader(`content-length`, Buffer.byteLength(data));
-  res.end(data);
-};
+  if (post) {
+    res.send(post);
+  } else {
+    res.status(404).send();
+  }
+});
+
+app.post(`/api/posts`, upload.none(), (req, res) => {
+  res.send(req.body);
+});
 
 module.exports = {
   name: `server`,
   description: `Запускает сервер`,
   execute(port = DEFAULT_PORT) {
-    const server = http.createServer(async (req, res) => {
-      try {
-        const requestPathname = url.parse(req.url).pathname;
-        const reqAbsPath = getStaticPath(requestPathname);
-
-        if (requestPathname === `/`) {
-          await readFile(reqAbsPath + `index.html`, res);
-        } else {
-          await readFile(reqAbsPath, res);
-        }
-      } catch (e) {
-        res.writeHead(404, `Not Found`);
-        res.end();
-      }
-    });
-
     const serverAddress = `http://${HOSTNAME}:${port}`;
 
-    server.listen(port, HOSTNAME, () => {
+    app.listen(port, HOSTNAME, () => {
       console.log(`Server running at ${serverAddress}/`);
     });
   },
+  app,
 };
