@@ -16,6 +16,31 @@ const {
 
 const data = generateEntity();
 
+describe(`Проверка функции isArrOfStringsContainFirstSymbol`, () => {
+  it(`стандартный кейс`, () => {
+    const hashtags = [`#блокчейн`, `#хайп`, `#смузи`, `#биткоин`];
+    assert(isArrOfStringsContainFirstSymbol(hashtags, `#`));
+  });
+
+  it(`содержит ошибку`, () => {
+    const case1 = [`блокчейн`, `#хайп`, `#смузи`];
+    const case2 = [`#блокчейн`, `хайп`, `#смузи`];
+    const case3 = [`#блокчейн`, `#хайп`, `смузи`];
+    const case4 = [`блокчейн`, `хайп`, `смузи`];
+    const case5 = [`блокчейн`];
+    assert.ifError(isArrOfStringsContainFirstSymbol(case1, `#`));
+    assert.ifError(isArrOfStringsContainFirstSymbol(case2, `#`));
+    assert.ifError(isArrOfStringsContainFirstSymbol(case3, `#`));
+    assert.ifError(isArrOfStringsContainFirstSymbol(case4, `#`));
+    assert.ifError(isArrOfStringsContainFirstSymbol(case5, `#`));
+  });
+
+  it(`пустые данные`, () => {
+    const hashtags = [];
+    assert(isArrOfStringsContainFirstSymbol(hashtags, `#`));
+  });
+});
+
 describe(`Проверка тестовых данных`, () => {
   it(`"url": адрес изображения 600x600, например https://picsum.photos/600/?random`, () => {
     assert.ok(data.url.indexOf(`600`) !== -1);
