@@ -6,9 +6,8 @@
   "main": "index.js",
   "scripts": {
     "test:eslint": "eslint .",
-    "test:mocha": "mocha ./src/**/*.test.js",
-    "test:mocha:watch": "mocha ./src/**/*.test.js --watch",
-    "test:mocha:api": "mocha ./src/**/**.api.test.js",
+    "test:mocha": "mocha './src/**/*.test.js'",
+    "test:mocha:watch": "mocha './src/**/*.test.js' --watch",
     "test": "npm run test:eslint && npm run test:mocha",
     "start": "nodemon index.js --server 2999"
   },

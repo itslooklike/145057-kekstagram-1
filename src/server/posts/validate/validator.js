@@ -72,7 +72,7 @@ const schema = {
         );
       }
 
-      if (isArrOfStringsContainSymbol(val, ` `)) {
+      if (!isArrOfStringsContainSymbol(val, ` `)) {
         errors.push(
             errorType(`hashtags`, val, `должно содержать одно слово без пробелов`)
         );
@@ -82,7 +82,7 @@ const schema = {
         errors.push(errorType(`hashtags`, val, `слова не должны повторяться`));
       }
 
-      if (isStringInArrTooLong(val, 20)) {
+      if (!isStringInArrTooLong(val, 20)) {
         errors.push(
             errorType(
                 `hashtags`,

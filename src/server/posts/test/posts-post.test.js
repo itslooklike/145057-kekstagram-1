@@ -1,7 +1,7 @@
 const supertest = require(`supertest`);
 const path = require(`path`);
-const {app} = require(`../server/server`);
-const generateEntity = require(`../data/generate-entity`);
+const {app} = require(`../../server`);
+const generateEntity = require(`../../../data/generate-entity`);
 
 const apiUrl = `/api/posts`;
 
@@ -31,13 +31,7 @@ describe(`POST ${apiUrl}`, function () {
 
     return supertest(app)
         .post(apiUrl)
-        .attach(
-            `filename`,
-            path.join(
-                __dirname,
-                `../server/posts/36268899-ce42264e-1288-11e8-82d7-2d8265398b9e.png`
-            )
-        )
+        .attach(`filename`, path.join(__dirname, `./keks.png`))
         .field(`scale`, 5)
         .field(`effect`, `chrome`)
         .field(`hashtags[]`, `#биткоин`)

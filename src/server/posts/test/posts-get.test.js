@@ -1,6 +1,6 @@
 const supertest = require(`supertest`);
 const assert = require(`assert`);
-const {app} = require(`../server/server`);
+const {app} = require(`../../server`);
 
 const apiUrl = `/api/posts`;
 
