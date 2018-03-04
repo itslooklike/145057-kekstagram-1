@@ -5,8 +5,6 @@ const aw = require(`../../utils/asyncWrap`);
 const ValidationError = require(`./validate/validation-error`);
 const validator = require(`./validate/validator`);
 const createStreamFromBuffer = require(`../utils/buffer-to-stream`);
-const imageStore = require(`../images/imageStore`);
-const postsStore = require(`./store`);
 
 const upload = multer({storage: multer.memoryStorage()});
 const postsRouter = new Router();
@@ -38,7 +36,7 @@ postsRouter.get(
       const limit = parseInt(req.query.limit, 10) || void 0;
 
       try {
-        res.send(await allPosts(await postsStore.getAllPosts(), skip, limit));
+        res.send(await allPosts(await postsRouter.postsStore.getAllPosts(), skip, limit));
       } catch (error) {
         console.log(error);
       }
@@ -50,7 +48,7 @@ postsRouter.get(
     aw(async (req, res) => {
       try {
         const {date} = req.params;
-        const result = await postsStore.getPost({date});
+        const result = await postsRouter.postsStore.getPost({date});
         const posts = await result.toArray();
 
         if (posts.length > 0) {
@@ -69,11 +67,11 @@ postsRouter.get(
     aw(async (req, res) => {
       try {
         const {date} = req.params;
-        const result = await postsStore.getPost({date});
+        const result = await postsRouter.postsStore.getPost({date});
         const posts = await result.toArray();
 
         if (posts.length > 0) {
-          const {info, stream} = await imageStore.get(posts[0].url);
+          const {info, stream} = await postsRouter.imageStore.get(posts[0].url);
 
           res.set(`content-type`, info.contentType);
           res.set(`content-length`, info.length);
@@ -99,16 +97,14 @@ postsRouter.post(
         throw new ValidationError(errors);
       } else {
         try {
-          const imageInfo = {
-            path: `/api/posts/${data.date}/image`,
-            mimetype: data.filename.mimetype,
-          };
+          const url = `/api/posts/${data.date}/image`;
+          const mimetype = data.filename.mimetype;
 
-          await imageStore.save(imageInfo.path, imageInfo.mimetype, createStreamFromBuffer(data.filename.buffer));
+          await postsRouter.imageStore.save(url, mimetype, createStreamFromBuffer(data.filename.buffer));
 
-          data.url = imageInfo.path;
+          data.url = url;
           delete data.filename;
-          await postsStore.save(data);
+          await postsRouter.postsStore.save(data);
 
           res.send(req.body);
         } catch (error) {
@@ -129,4 +125,8 @@ postsRouter.use((exception, req, res, next) => {
   next();
 });
 
-module.exports = postsRouter;
+module.exports = (postsStore, imageStore) => {
+  postsRouter.postsStore = postsStore;
+  postsRouter.imageStore = imageStore;
+  return postsRouter;
+};

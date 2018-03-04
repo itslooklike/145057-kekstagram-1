@@ -1,5 +1,7 @@
 const express = require(`express`);
-const routePosts = require(`./posts/route`);
+const imageStore = require(`./images/store`);
+const postsStore = require(`./posts/store`);
+const routePosts = require(`./posts/route`)(postsStore, imageStore);
 
 const HOSTNAME = `127.0.0.1`;
 const DEFAULT_PORT = 3000;
