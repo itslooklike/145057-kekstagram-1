@@ -4,16 +4,11 @@ const generateEntity = require(`../../../data/generate-entity`);
 const posts = ({limit = 50, skip = 0} = {}) => {
   const data = [];
 
-  Array.from({length: limit}).forEach(() => data.push(generateEntity()));
+  Array.from({length: limit + skip}).forEach(() =>
+    data.push(generateEntity())
+  );
 
-  const response = {
-    data,
-    skip,
-    limit,
-    total: data.length,
-  };
-
-  return response;
+  return data;
 };
 
 class Cursor {

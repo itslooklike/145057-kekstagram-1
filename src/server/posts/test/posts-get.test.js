@@ -33,22 +33,22 @@ describe(`GET ${apiUrl}`, function () {
         });
   });
 
-  // it(`ответ содержит необходимые поля`, () => {
-  //   const checkForKeys = (obj, requireKeys) => {
-  //     requireKeys.forEach((item) => assert.ok(obj[item]));
-  //   };
+  it(`ответ содержит необходимые поля`, () => {
+    const checkForKeys = (obj, requireKeys) => {
+      requireKeys.forEach((item) => assert.ok(obj[item]));
+    };
 
-  //   return supertest(app)
-  //       .get(apiUrl)
-  //       .expect(200)
-  //       .expect(`Content-Type`, /json/)
-  //       .then((res) => checkForKeys(res.body.data[0], responseKeysMap));
-  // });
+    return supertest(app)
+        .get(apiUrl)
+        .expect(200)
+        .expect(`Content-Type`, /json/)
+        .then((res) => checkForKeys(res.body.data[0], responseKeysMap));
+  });
 
-  // it(`не существующий адрес должен вернуть 404`, () => {
-  //   return supertest(app)
-  //       .get(`/api/unknown-address`)
-  //       .expect(404)
-  //       .expect(`Content-Type`, /html/);
-  // });
+  it(`не существующий адрес должен вернуть 404`, () => {
+    return supertest(app)
+        .get(`/api/unknown-address`)
+        .expect(404)
+        .expect(`Content-Type`, /html/);
+  });
 });

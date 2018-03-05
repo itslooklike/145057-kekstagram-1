@@ -36,9 +36,11 @@ postsRouter.get(
       const limit = parseInt(req.query.limit, 10) || void 0;
 
       try {
-        res.send(await allPosts(await postsRouter.postsStore.getAllPosts(), skip, limit));
+        res.send(
+            await allPosts(await postsRouter.postsStore.getAllPosts(), skip, limit)
+        );
       } catch (error) {
-        console.log(error);
+        console.log(`не удалось получить все посты`, error);
       }
     })
 );
@@ -100,7 +102,11 @@ postsRouter.post(
           const url = `/api/posts/${data.date}/image`;
           const mimetype = data.filename.mimetype;
 
-          await postsRouter.imageStore.save(url, mimetype, createStreamFromBuffer(data.filename.buffer));
+          await postsRouter.imageStore.save(
+              url,
+              mimetype,
+              createStreamFromBuffer(data.filename.buffer)
+          );
 
           data.url = url;
           delete data.filename;
