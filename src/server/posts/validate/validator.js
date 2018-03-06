@@ -15,35 +15,25 @@ const errorType = (name, value, message) => ({
 const schema = {
   filename: {
     required: true,
-    validate(val) {
-      const errors = [];
-
+    validate(val, errors) {
       if (!val.mimetype.startsWith(`image/`)) {
         errors.push(
             errorType(`filename`, val.mimetype, `должно быть картинкой`)
         );
       }
-
-      return errors;
     },
   },
   scale: {
     required: true,
-    validate(val) {
-      const errors = [];
-
+    validate(val, errors) {
       if (!numberInRange(val, 0, 100)) {
         errors.push(errorType(`scale`, val, `число, в пределах от 0 до 100`));
       }
-
-      return errors;
     },
   },
   effect: {
     required: true,
-    validate(val) {
-      const errors = [];
-
+    validate(val, errors) {
       if (effectsName.indexOf(val) === -1) {
         errors.push(
             errorType(
@@ -53,15 +43,11 @@ const schema = {
             )
         );
       }
-
-      return errors;
     },
   },
   hashtags: {
     required: false,
-    validate(val) {
-      const errors = [];
-
+    validate(val, errors) {
       if (val.length > 5) {
         errors.push(errorType(`hashtags`, val, `не более 5 элементов`));
       }
@@ -91,22 +77,16 @@ const schema = {
             )
         );
       }
-
-      return errors;
     },
   },
   description: {
     required: false,
-    validate(val) {
-      const errors = [];
-
+    validate(val, errors) {
       if (val.length > 140) {
         errors.push(
             errorType(`description`, val, `строка — не более 140 символов`)
         );
       }
-
-      return errors;
     },
   },
 };
@@ -116,11 +96,7 @@ const validator = (obj) => {
 
   Object.keys(schema).forEach((item) => {
     if (obj[item]) {
-      const err = schema[item].validate(obj[item]);
-
-      if (err.length > 0) {
-        errors.push(...err);
-      }
+      schema[item].validate(obj[item], errors);
     } else if (schema[item].required) {
       errors.push(
           errorType(item, obj[item], `Поле ${item} является обязательным`)
