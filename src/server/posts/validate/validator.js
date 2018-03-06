@@ -94,15 +94,15 @@ const schema = {
 const validator = (obj) => {
   const errors = [];
 
-  Object.keys(schema).forEach((item) => {
-    if (obj[item]) {
-      schema[item].validate(obj[item], errors);
-    } else if (schema[item].required) {
-      errors.push(
-          errorType(item, obj[item], `Поле ${item} является обязательным`)
-      );
+  for (const i in schema) {
+    if (schema.hasOwnProperty(i)) {
+      if (obj[i]) {
+        schema[i].validate(obj[i], errors);
+      } else if (schema[i].required) {
+        errors.push(errorType(i, obj[i], `Поле ${i} является обязательным`));
+      }
     }
-  });
+  }
 
   return errors;
 };
