@@ -1,21 +1,22 @@
 const supertest = require(`supertest`);
-const {app} = require(`../server`);
-const generateEntity = require(`../data/generate-entity`);
+const path = require(`path`);
+const {app} = require(`../../server`);
+const generateEntity = require(`../../../data/generate-entity`);
+
 const apiUrl = `/api/posts`;
 
 describe(`POST ${apiUrl}`, function () {
-  it(`должен совпадать JSON`, () => {
+  it(`должен вернуть 400, тк приаттачиный файл обязателен`, () => {
     const mockData = generateEntity();
 
     return supertest(app)
         .post(apiUrl)
         .send(mockData)
-        .expect(200, mockData);
+        .expect(400);
   });
 
   it(`должен совпадать form-data`, () => {
     const mockData = {
-      url: `https://picsum.photos/600/?random`,
       scale: 5,
       effect: `chrome`,
       hashtags: [`#биткоин`],
@@ -30,7 +31,7 @@ describe(`POST ${apiUrl}`, function () {
 
     return supertest(app)
         .post(apiUrl)
-        .field(`url`, `https://picsum.photos/600/?random`)
+        .attach(`filename`, path.join(__dirname, `./keks.png`))
         .field(`scale`, 5)
         .field(`effect`, `chrome`)
         .field(`hashtags[]`, `#биткоин`)
@@ -50,31 +51,6 @@ describe(`POST ${apiUrl}`, function () {
         .field(`date`, 1234)
         .expect(200, mockData);
   });
-
-  // этот тест на валидацию пока ненужен
-  // it(`должен вернуть 400, если неверно указан description и comments`, () => {
-  //   return supertest(app)
-  //       .post(apiUrl)
-  //       .field(`url`, `https://picsum.photos/600/?random`)
-  //       .field(`scale`, 5)
-  //       .field(`effect`, `chrome`)
-  //       .field(`hashtags[]`, `#биткоин`)
-  //       .field(`description`, 547)
-  //       .field(`likes`, 432)
-  //       .field(`comments`, 666)
-  //       .expect(400, [
-  //         {
-  //           fieldName: `description`,
-  //           fieldValue: 547,
-  //           errorMessage: `should be a string`,
-  //         },
-  //         {
-  //           fieldName: `comments`,
-  //           fieldValue: 666,
-  //           errorMessage: `should be a array of strings`,
-  //         },
-  //       ]);
-  // });
 
   it(`не существующий адрес должен вернуть 404`, () => {
     return supertest(app)
