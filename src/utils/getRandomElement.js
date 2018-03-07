@@ -1,3 +1,5 @@
+const logger = require(`../logger`);
+
 const getRandomElement = (elem = []) => {
   if (Array.isArray(elem) && elem.length > 1) {
     return elem[Math.floor(Math.random() * elem.length)];
@@ -9,7 +11,7 @@ const getRandomElement = (elem = []) => {
     return result;
   }
 
-  console.error(`слишком мало элементов в массиве`);
+  logger.error(`слишком мало элементов в массиве`);
   return -1;
 };
 

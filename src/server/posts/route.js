@@ -5,6 +5,7 @@ const aw = require(`../../utils/asyncWrap`);
 const ValidationError = require(`./validate/validation-error`);
 const validator = require(`./validate/validator`);
 const createStreamFromBuffer = require(`../utils/buffer-to-stream`);
+const logger = require(`../../logger`);
 
 const upload = multer({storage: multer.memoryStorage()});
 const postsRouter = new Router();
@@ -29,6 +30,15 @@ const allPosts = async (cursor, skip = 0, limit = 50) => {
 
 postsRouter.use(bodyParser.json());
 
+postsRouter.use((req, res, next) => {
+  res.header(`Access-Control-Allow-Origin`, `*`);
+  res.header(
+      `Access-Control-Allow-Headers`,
+      `Origin, X-Requested-With, Content-Type, Accept`
+  );
+  next();
+});
+
 postsRouter.get(
     ``,
     aw(async (req, res) => {
@@ -36,11 +46,13 @@ postsRouter.get(
       const limit = parseInt(req.query.limit, 10) || void 0;
 
       try {
+        logger.profile(`получение всех постов`);
         res.send(
             await allPosts(await postsRouter.postsStore.getAllPosts(), skip, limit)
         );
+        logger.profile(`получение всех постов`);
       } catch (error) {
-        console.log(`не удалось получить все посты`, error);
+        logger.error(`не удалось получить все посты: ${error.message}`);
       }
     })
 );
@@ -59,7 +71,7 @@ postsRouter.get(
           res.status(404).send();
         }
       } catch (error) {
-        console.log(error);
+        logger.error(`не удалось найти пост: ${error.message}`);
       }
     })
 );
@@ -83,7 +95,7 @@ postsRouter.get(
           res.status(404).send();
         }
       } catch (error) {
-        console.log(error);
+        logger.error(`не удалось найти картинку поста: ${error.message}`);
       }
     })
 );
@@ -114,7 +126,7 @@ postsRouter.post(
 
           res.send(req.body);
         } catch (error) {
-          console.log(error);
+          logger.error(`не удалось сохранить пост: ${error.message}`);
         }
       }
     })
@@ -125,6 +137,7 @@ postsRouter.use((exception, req, res, next) => {
 
   if (exception instanceof ValidationError) {
     error = exception.errors;
+    logger.error(`ошибки при валидации: ${error}`);
   }
 
   res.status(400).send(error);

@@ -2,12 +2,11 @@ const express = require(`express`);
 const imageStore = require(`./images/store`);
 const postsStore = require(`./posts/store`);
 const routePosts = require(`./posts/route`)(postsStore, imageStore);
+const logger = require(`../logger`);
 
 const HOSTNAME = process.env.SERVER_HOST || `127.0.0.1`;
 const DEFAULT_PORT = process.env.SERVER_PORT || 3000;
 const app = express();
-
-console.log(`HOSTNAME`, HOSTNAME);
 
 app.disable(`x-powered-by`);
 app.use(express.static(`static`));
@@ -20,7 +19,7 @@ module.exports = {
     const serverAddress = `http://${HOSTNAME}:${port}`;
 
     app.listen(port, HOSTNAME, () => {
-      console.log(`Server running at ${serverAddress}/`);
+      logger.info(`Server running at ${serverAddress}`);
     });
   },
   app,
