@@ -2,7 +2,7 @@ const db = require(`../../database/database`);
 
 const setupCollection = async () => {
   const dBase = await db;
-  const collection = dBase.collection(`documents`);
+  const collection = dBase.collection(`posts`);
 
   return collection;
 };
@@ -26,5 +26,7 @@ class PostsStore {
 }
 
 module.exports = new PostsStore(
-    setupCollection().catch((e) => console.error(`Failed to set up "documents"-collection`, e))
+    setupCollection().catch((e) =>
+      console.error(`Failed to set up "posts"-collection`, e)
+    )
 );
