@@ -68,7 +68,7 @@ postsRouter.get(
         if (posts.length > 0) {
           res.send(posts);
         } else {
-          res.status(404).send();
+          res.status(404).send(`пост ${date} не найден`);
         }
       } catch (error) {
         logger.error(`не удалось найти пост: ${error.message}`);
@@ -92,7 +92,7 @@ postsRouter.get(
           res.status(200);
           stream.pipe(res);
         } else {
-          res.status(404).send();
+          res.status(404).send(`пост ${date} не найден`);
         }
       } catch (error) {
         logger.error(`не удалось найти картинку поста: ${error.message}`);
@@ -104,7 +104,23 @@ postsRouter.post(
     ``,
     upload.single(`filename`),
     aw(async (req, res) => {
-      const data = Object.assign(req.body, {filename: req.file});
+      const data = Object.assign(req.body, {
+        filename: req.file,
+        date: Date.now().toString(),
+      });
+
+      // хардкод для клиента, ему всегда нужен массив с комментами
+      if (!data.comments) {
+        Object.assign(data, {comments: []});
+      }
+
+      // конвертим строку в массив
+      // тк с клиента приходит строка, а в базу нужно класть массив
+      if (data.hashtags && typeof data.hashtags === `string`) {
+        Object.assign(data, {hashtags: data.hashtags.split(` `)});
+        console.log(data);
+      }
+
       const errors = validator(data);
 
       if (errors.length > 0) {
