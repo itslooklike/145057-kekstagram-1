@@ -1,7 +1,7 @@
 const {Router} = require(`express`);
 const bodyParser = require(`body-parser`);
 const multer = require(`multer`);
-const aw = require(`../../utils/asyncWrap`);
+const asyncWrap = require(`../../utils/asyncWrap`);
 const ValidationError = require(`./validate/validation-error`);
 const validator = require(`./validate/validator`);
 const createStreamFromBuffer = require(`../utils/buffer-to-stream`);
@@ -11,9 +11,7 @@ const upload = multer({storage: multer.memoryStorage()});
 const postsRouter = new Router();
 
 const allPosts = async (cursor, skip = 0, limit = 50) => {
-  if (limit > 50) {
-    limit = 50;
-  }
+  limit = Math.min(limit, 50);
 
   const result = await cursor
       .skip(skip)
@@ -41,25 +39,21 @@ postsRouter.use((req, res, next) => {
 
 postsRouter.get(
     ``,
-    aw(async (req, res) => {
+    asyncWrap(async (req, res) => {
       const skip = parseInt(req.query.skip, 10) || void 0;
       const limit = parseInt(req.query.limit, 10) || void 0;
 
-      try {
-        logger.profile(`получение всех постов`);
-        res.send(
-            await allPosts(await postsRouter.postsStore.getAllPosts(), skip, limit)
-        );
-        logger.profile(`получение всех постов`);
-      } catch (error) {
-        logger.error(`не удалось получить все посты: ${error.message}`);
-      }
+      logger.info(`получение всех постов`);
+      res.send(
+          await allPosts(await postsRouter.postsStore.getAllPosts(), skip, limit)
+      );
+      logger.info(`получение всех постов`);
     })
 );
 
 postsRouter.get(
     `/:date`,
-    aw(async (req, res) => {
+    asyncWrap(async (req, res) => {
       try {
         const {date} = req.params;
         const result = await postsRouter.postsStore.getPost({date});
@@ -78,7 +72,7 @@ postsRouter.get(
 
 postsRouter.get(
     `/:date/image`,
-    aw(async (req, res) => {
+    asyncWrap(async (req, res) => {
       try {
         const {date} = req.params;
         const result = await postsRouter.postsStore.getPost({date});
@@ -103,7 +97,7 @@ postsRouter.get(
 postsRouter.post(
     ``,
     upload.single(`filename`),
-    aw(async (req, res) => {
+    asyncWrap(async (req, res) => {
       const data = Object.assign(req.body, {
         filename: req.file,
         date: Date.now().toString(),
@@ -149,12 +143,14 @@ postsRouter.post(
 
 postsRouter.use((exception, req, res, next) => {
   let error = exception;
+  let errorText = `неизвестная ошибка`;
 
   if (exception instanceof ValidationError) {
     error = exception.errors;
-    logger.error(`ошибки при валидации: ${error}`);
+    errorText = `ошибка валидации`;
   }
 
+  logger.error(`${errorText}: ${JSON.stringify(error)}`);
   res.status(400).send(error);
   next();
 });

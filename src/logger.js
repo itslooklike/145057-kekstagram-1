@@ -1,4 +1,5 @@
 const winston = require(`winston`);
+const {combine, simple, json} = winston.format;
 
 // error: 0,
 // warn: 1,
@@ -8,7 +9,7 @@ const winston = require(`winston`);
 // silly: 5
 
 const logger = winston.createLogger({
-  format: winston.format.json(),
+  format: json(),
   transports: [
     new winston.transports.File({filename: `error.log`, level: `error`}),
     new winston.transports.File({filename: `combined.log`, level: `info`}),
@@ -19,7 +20,7 @@ const logger = winston.createLogger({
 if (process.env.NODE_ENV !== `production`) {
   logger.add(
       new winston.transports.Console({
-        format: winston.format.simple(),
+        format: combine(simple()),
         level: `silly`,
       })
   );
