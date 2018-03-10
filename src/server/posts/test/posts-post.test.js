@@ -1,9 +1,12 @@
 const supertest = require(`supertest`);
 const path = require(`path`);
-const {app} = require(`../../server`);
+const app = require(`express`)();
+const postsRouter = require(`./mock-route`);
 const generateEntity = require(`../../../data/generate-entity`);
 
 const apiUrl = `/api/posts`;
+
+app.use(`${apiUrl}`, postsRouter);
 
 describe(`POST ${apiUrl}`, function () {
   it(`должен вернуть 400, тк приаттачиный файл обязателен`, () => {
@@ -17,6 +20,7 @@ describe(`POST ${apiUrl}`, function () {
 
   it(`должен совпадать form-data`, () => {
     const mockData = {
+      url: `/api/posts/1234/image`,
       scale: 5,
       effect: `chrome`,
       hashtags: [`#биткоин`],

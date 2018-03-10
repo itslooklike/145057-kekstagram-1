@@ -1,6 +1,7 @@
 const supertest = require(`supertest`);
 const assert = require(`assert`);
-const {app} = require(`../../server`);
+const app = require(`express`)();
+const postsRouter = require(`./mock-route`);
 
 const apiUrl = `/api/posts`;
 
@@ -14,6 +15,8 @@ const responseKeysMap = [
   `comments`,
   `date`,
 ];
+
+app.use(`${apiUrl}`, postsRouter);
 
 describe(`GET ${apiUrl}`, function () {
   it(`отвечает джейсоном и длинна совпадает`, () => {
