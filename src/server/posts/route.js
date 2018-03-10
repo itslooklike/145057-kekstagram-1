@@ -118,7 +118,6 @@ postsRouter.post(
       // тк с клиента приходит строка, а в базу нужно класть массив
       if (data.hashtags && typeof data.hashtags === `string`) {
         Object.assign(data, {hashtags: data.hashtags.split(` `)});
-        console.log(data);
       }
 
       const errors = validator(data);

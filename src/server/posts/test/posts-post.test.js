@@ -1,3 +1,4 @@
+const assert = require(`assert`);
 const supertest = require(`supertest`);
 const path = require(`path`);
 const app = require(`express`)();
@@ -19,41 +20,45 @@ describe(`POST ${apiUrl}`, function () {
   });
 
   it(`должен совпадать form-data`, () => {
-    const mockData = {
-      url: `/api/posts/1234/image`,
-      scale: 5,
-      effect: `chrome`,
-      hashtags: [`#биткоин`],
-      description: `Губерниев в шоке от новости про мельдоний Крушельницкого`,
-      likes: 432,
-      comments: [
-        `Губерниев в шоке от новости про мельдоний Крушельницкого`,
-        `Ученые предположили человеческую реакцию на встречу с пришельцами`,
-      ],
-      date: 1234,
-    };
-
     return supertest(app)
         .post(apiUrl)
         .attach(`filename`, path.join(__dirname, `./keks.png`))
         .field(`scale`, 5)
         .field(`effect`, `chrome`)
-        .field(`hashtags[]`, `#биткоин`)
+        .field(`hashtags`, `#биткоин`)
         .field(
             `description`,
             `Губерниев в шоке от новости про мельдоний Крушельницкого`
         )
         .field(`likes`, 432)
         .field(
-            `comments[]`,
+            `comments`,
             `Губерниев в шоке от новости про мельдоний Крушельницкого`
         )
         .field(
-            `comments[]`,
+            `comments`,
             `Ученые предположили человеческую реакцию на встречу с пришельцами`
         )
-        .field(`date`, 1234)
-        .expect(200, mockData);
+        .expect(200)
+        .then((res) => {
+          assert(res.body.url.length > 0);
+          assert(res.body.date.length > 0);
+          assert(res.body.scale === `5`);
+          assert(res.body.effect === `chrome`);
+          assert(res.body.hashtags[0] === `#биткоин`);
+          assert(
+              res.body.description ===
+            `Губерниев в шоке от новости про мельдоний Крушельницкого`
+          );
+          assert(
+              res.body.comments[0] ===
+            `Губерниев в шоке от новости про мельдоний Крушельницкого`
+          );
+          assert(
+              res.body.comments[1] ===
+            `Ученые предположили человеческую реакцию на встречу с пришельцами`
+          );
+        });
   });
 
   it(`не существующий адрес должен вернуть 404`, () => {
