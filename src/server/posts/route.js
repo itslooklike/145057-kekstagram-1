@@ -1,18 +1,17 @@
 const {Router} = require(`express`);
 const bodyParser = require(`body-parser`);
 const multer = require(`multer`);
-const aw = require(`../../utils/asyncWrap`);
+const asyncWrap = require(`../../utils/asyncWrap`);
 const ValidationError = require(`./validate/validation-error`);
 const validator = require(`./validate/validator`);
 const createStreamFromBuffer = require(`../utils/buffer-to-stream`);
+const logger = require(`../../logger`);
 
 const upload = multer({storage: multer.memoryStorage()});
 const postsRouter = new Router();
 
 const allPosts = async (cursor, skip = 0, limit = 50) => {
-  if (limit > 50) {
-    limit = 50;
-  }
+  limit = Math.min(limit, 50);
 
   const result = await cursor
       .skip(skip)
@@ -29,25 +28,32 @@ const allPosts = async (cursor, skip = 0, limit = 50) => {
 
 postsRouter.use(bodyParser.json());
 
+postsRouter.use((req, res, next) => {
+  res.header(`Access-Control-Allow-Origin`, `*`);
+  res.header(
+      `Access-Control-Allow-Headers`,
+      `Origin, X-Requested-With, Content-Type, Accept`
+  );
+  next();
+});
+
 postsRouter.get(
     ``,
-    aw(async (req, res) => {
+    asyncWrap(async (req, res) => {
       const skip = parseInt(req.query.skip, 10) || void 0;
       const limit = parseInt(req.query.limit, 10) || void 0;
 
-      try {
-        res.send(
-            await allPosts(await postsRouter.postsStore.getAllPosts(), skip, limit)
-        );
-      } catch (error) {
-        console.log(`не удалось получить все посты`, error);
-      }
+      logger.info(`получение всех постов`);
+      res.send(
+          await allPosts(await postsRouter.postsStore.getAllPosts(), skip, limit)
+      );
+      logger.info(`получение всех постов`);
     })
 );
 
 postsRouter.get(
     `/:date`,
-    aw(async (req, res) => {
+    asyncWrap(async (req, res) => {
       try {
         const {date} = req.params;
         const result = await postsRouter.postsStore.getPost({date});
@@ -56,17 +62,17 @@ postsRouter.get(
         if (posts.length > 0) {
           res.send(posts);
         } else {
-          res.status(404).send();
+          res.status(404).send(`пост ${date} не найден`);
         }
       } catch (error) {
-        console.log(error);
+        logger.error(`не удалось найти пост: ${error.message}`);
       }
     })
 );
 
 postsRouter.get(
     `/:date/image`,
-    aw(async (req, res) => {
+    asyncWrap(async (req, res) => {
       try {
         const {date} = req.params;
         const result = await postsRouter.postsStore.getPost({date});
@@ -80,10 +86,10 @@ postsRouter.get(
           res.status(200);
           stream.pipe(res);
         } else {
-          res.status(404).send();
+          res.status(404).send(`пост ${date} не найден`);
         }
       } catch (error) {
-        console.log(error);
+        logger.error(`не удалось найти картинку поста: ${error.message}`);
       }
     })
 );
@@ -91,8 +97,23 @@ postsRouter.get(
 postsRouter.post(
     ``,
     upload.single(`filename`),
-    aw(async (req, res) => {
-      const data = Object.assign(req.body, {filename: req.file});
+    asyncWrap(async (req, res) => {
+      const data = Object.assign(req.body, {
+        filename: req.file,
+        date: Date.now().toString(),
+      });
+
+      // хардкод для клиента, ему всегда нужен массив с комментами
+      if (!data.comments) {
+        Object.assign(data, {comments: []});
+      }
+
+      // конвертим строку в массив
+      // тк с клиента приходит строка, а в базу нужно класть массив
+      if (data.hashtags && typeof data.hashtags === `string`) {
+        Object.assign(data, {hashtags: data.hashtags.split(` `)});
+      }
+
       const errors = validator(data);
 
       if (errors.length > 0) {
@@ -114,7 +135,7 @@ postsRouter.post(
 
           res.send(req.body);
         } catch (error) {
-          console.log(error);
+          logger.error(`не удалось сохранить пост: ${error.message}`);
         }
       }
     })
@@ -122,11 +143,14 @@ postsRouter.post(
 
 postsRouter.use((exception, req, res, next) => {
   let error = exception;
+  let errorText = `неизвестная ошибка`;
 
   if (exception instanceof ValidationError) {
     error = exception.errors;
+    errorText = `ошибка валидации`;
   }
 
+  logger.error(`${errorText}: ${JSON.stringify(error)}`);
   res.status(400).send(error);
   next();
 });

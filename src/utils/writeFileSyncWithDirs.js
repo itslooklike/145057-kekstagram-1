@@ -1,5 +1,6 @@
 const fs = require(`fs`);
 const path = require(`path`);
+const logger = require(`../logger`);
 
 const writeFileSyncWithDirs = (url, data) => {
   const dirname = path.dirname(url);
@@ -9,7 +10,7 @@ const writeFileSyncWithDirs = (url, data) => {
 
     if (!fs.existsSync(curDir)) {
       fs.mkdirSync(curDir);
-      console.log(`👊  папка: '${curDir}' создана!`);
+      logger.info(`👊  папка: '${curDir}' создана!`);
     }
 
     return curDir;
