@@ -3,8 +3,8 @@ const generateEntity = require(`../data/generate-entity`);
 
 const {
   isArrayUnique,
-  numberInRange,
-  stringInRange,
+  isNumberInRange,
+  isStringInRange,
 } = require(`../utils/assertions`);
 
 const {
@@ -22,7 +22,7 @@ describe(`Проверка тестовых данных`, () => {
   });
 
   it(`"scale": число, в пределах от 0 до 100`, () => {
-    assert.ok(numberInRange(data.scale, 0, 100));
+    assert.ok(isNumberInRange(data.scale, 0, 100));
   });
 
   it(`"effect": строка, одно из предустановленных значений:`, () => {
@@ -30,11 +30,11 @@ describe(`Проверка тестовых данных`, () => {
   });
 
   it(`"description": строка — не более 140 символов`, () => {
-    assert.ok(stringInRange(data.description, void 0, 140));
+    assert.ok(isStringInRange(data.description, void 0, 140));
   });
 
   it(`"likes": число, в пределах от 0 до 1000`, () => {
-    assert.ok(numberInRange(data.likes, 0, 1000));
+    assert.ok(isNumberInRange(data.likes, 0, 1000));
   });
 
   it(`"comments": массив строк, каждая строка не должна превышать 140 символов`, () => {

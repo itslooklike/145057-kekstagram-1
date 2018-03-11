@@ -47,7 +47,6 @@ postsRouter.get(
       res.send(
           await allPosts(await postsRouter.postsStore.getAllPosts(), skip, limit)
       );
-      logger.info(`получение всех постов`);
     })
 );
 

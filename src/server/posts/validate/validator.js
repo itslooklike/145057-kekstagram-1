@@ -1,4 +1,4 @@
-const {isArrayUnique, numberInRange} = require(`../../../utils/assertions`);
+const {isArrayUnique, isNumberInRange} = require(`../../../utils/assertions`);
 const {
   effectsName,
   isArrOfStringsContainSymbol,
@@ -26,7 +26,7 @@ const schema = {
   scale: {
     required: true,
     validate(val, errors) {
-      if (!numberInRange(val, 0, 100)) {
+      if (!isNumberInRange(val, 0, 100)) {
         errors.push(errorType(`scale`, val, `число, в пределах от 0 до 100`));
       }
     },
